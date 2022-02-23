@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - Server-side daemon (not production quality, using Flask development server)
 - Command-line tool
+- JavaScript code generator for node types

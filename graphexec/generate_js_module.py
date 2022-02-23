@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
+
 import jinja2
 from pydantic import BaseModel
-
 import yaml
 
 
