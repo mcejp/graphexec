@@ -1,8 +1,10 @@
 import logging
+from os import getcwd
 from pathlib import Path
+import sys
 from typing import Any, Dict, List
-from flask import Flask, redirect, request, send_from_directory
 
+from flask import Flask, redirect, request, send_from_directory
 
 from .litegraph_processor import process_graph
 from .node_type import collect_node_types
@@ -44,6 +46,7 @@ def main():
 
     args = parser.parse_args()
 
+    sys.path.insert(0, getcwd())
     node_types = collect_node_types(args.modules)
 
     app = create_app(node_types=node_types, www_root=args.wwwroot)
