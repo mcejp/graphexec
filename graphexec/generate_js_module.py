@@ -1,10 +1,14 @@
 from dataclasses import dataclass
+from os import getcwd
 from pathlib import Path
+import sys
 from typing import Any, Dict, Optional
 
 import jinja2
 from pydantic import BaseModel
 import yaml
+
+from .node_type import collect_node_types
 
 
 @dataclass
@@ -54,9 +58,20 @@ def main():
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument("path", type=Path)
+    parser.add_argument("module")
     parser.add_argument("-o", dest="output_path", type=Path, required=True)
     args = parser.parse_args()
+
+    sys.path.insert(0, getcwd())
+    node_types = collect_node_types([args.module])
+
+    node_type_models = {}
+
+    for name, function in node_types.items():
+        if function.__doc__ is None:
+            print(f"Warning: no doc for node type {name}", file=sys.stderr)
+        else:
+            node_type_models[name] = NodeTypeModel(**yaml.safe_load(function.__doc__))
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates"),
@@ -66,17 +81,8 @@ def main():
 
     template = env.get_template("node_types.js")
 
-    with open(args.path, "rt") as f:
-        model = yaml.safe_load(f)
-        node_types = {
-            name: NodeTypeModel(**node_type_model)
-            for name, node_type_model in model.items()
-        }
-
-    print(node_types)
-
     with open(args.output_path, "wt") as f:
-        f.write(template.render(node_types=node_types))
+        f.write(template.render(node_types=node_type_models, source_module=args.module))
 
 
 if __name__ == "__main__":
