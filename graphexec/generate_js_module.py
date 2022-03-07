@@ -16,7 +16,7 @@ def main():
     args = parser.parse_args()
 
     sys.path.insert(0, getcwd())
-    node_types = collect_node_types([args.module])
+    node_types = collect_node_types([args.module], include_builtins=False)
 
     node_type_models = {}
 

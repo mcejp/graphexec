@@ -6,8 +6,11 @@ from graphexec.model import NodeTypeModel, PropertyModel
 from . import litegraph_builtins
 
 
-def collect_node_types(module_names: List[str]) -> Dict[str, Any]:
-    node_types = {} | litegraph_builtins.NODE_TYPES
+def collect_node_types(module_names: List[str], *, include_builtins: bool) -> Dict[str, Any]:
+    if include_builtins:
+        node_types = {} | litegraph_builtins.NODE_TYPES
+    else:
+        node_types = {}
 
     for module_name in module_names:
         module = importlib.import_module(module_name)
