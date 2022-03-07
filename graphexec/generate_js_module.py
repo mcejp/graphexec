@@ -1,9 +1,11 @@
+import json
 from os import getcwd
 from pathlib import Path
 import sys
 
 import jinja2
 
+from .model import PropertyModel
 from .node_type import collect_node_types
 
 
@@ -31,6 +33,16 @@ def main():
         trim_blocks=True,
         lstrip_blocks=True,
     )
+
+    def format_additional_options(property: PropertyModel) -> str:
+        if property.additional_options is None:
+            return ""
+
+        return ", ".join(
+            f"{name}: {json.dumps(value)}" for name, value in property.additional_options.items()
+        )
+
+    env.filters["format_additional_options"] = format_additional_options
 
     template = env.get_template("node_types.js")
 

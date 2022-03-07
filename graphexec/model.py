@@ -21,14 +21,6 @@ class PropertyModel:
         self.label = label
         self.additional_options = kwargs
 
-    def format_additional_options_js(self) -> str:
-        if self.additional_options is None:
-            return ""
-
-        return ", ".join(
-            f"{name}: {value}" for name, value in self.additional_options.items()
-        )
-
 
 @dataclass
 class NodeTypeModel:

@@ -26,7 +26,7 @@
 
         {% for prop_name, prop in t.properties.items() %}
         {% if prop.widget_type %}
-        this.addWidget({{prop.widget_type | tojson}}, {{prop.label | tojson}}, this.properties.{{prop_name}}, undefined, { property: {{prop_name | tojson}}, {{prop.format_additional_options_js()}} });
+        this.addWidget({{prop.widget_type | tojson}}, {{prop.label | tojson}}, this.properties.{{prop_name}}, undefined, { property: {{prop_name | tojson}}, {{prop | format_additional_options}} });
         {% endif %}
         {% endfor %}
 
