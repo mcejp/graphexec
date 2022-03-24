@@ -23,16 +23,16 @@ from graphexec import node_type
 
 from .my_implementation import _perlin_noise
 
-@node_type.define(label="Perlin noise")
+@node_type.define("my_package/perlin_noise", "Perlin noise")
 @node_type.input("width", "number")
 @node_type.input("height", "number")
 @node_type.output("map", "numpy.ndarray")
 def perlin_noise(width, height):
     return dict(map=_perlin_noise(int(width), int(height)))
 
-NODE_TYPES = {
-    "my_package/perlin_noise": perlin_noise,
-}
+NODE_TYPES = [
+    perlin_noise,
+]
 ```
 
     graphexec-generate-js-module -o ../litegraph/src/nodes/my-package-generated.js my_node_types
