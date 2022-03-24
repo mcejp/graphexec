@@ -31,7 +31,6 @@ def create_app(node_types: List[Dict[str, Any]], www_root: Path):
 
     @app.route("/<path:path>")
     def send_js(path):
-        print("TEST", www_root, path)
         return send_from_directory(www_root, path)
 
     return app
