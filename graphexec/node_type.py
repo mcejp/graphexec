@@ -1,19 +1,42 @@
 import importlib
+import logging
+import sys
 from typing import Any, Callable, Dict, List, Sequence
 
 from graphexec.model import NodeTypeModel, PropertyModel
 
 
-def collect_node_types(module_names: List[str], *, include_builtins: bool) -> Dict[str, Any]:
+logger = logging.getLogger(__name__)
+
+
+def collect_node_types(module_names: List[str], *, discover_installed: bool) -> Dict[str, Any]:
     def dictify(funcs: Sequence[Callable]):
         return {func._node_type_model.type_name: func for func in funcs}
 
-    if include_builtins:
-        from . import litegraph_builtins
+    node_types = {}
 
-        node_types = {} | dictify(litegraph_builtins.NODE_TYPES)
-    else:
-        node_types = {}
+    if discover_installed:
+        if sys.version_info < (3, 10):
+            from importlib_metadata import entry_points
+        else:
+            # We *must not* attempt this pre-3.10, as the built-in package has an incompatible API
+            from importlib.metadata import entry_points
+
+        discovered = entry_points(group="graphexec.node_types")
+
+        for entry_point in discovered:
+            logger.debug("Discovered %s", entry_point)
+            module = entry_point.load()
+            additional_node_types = dictify(module.NODE_TYPES)
+
+            intersection = node_types.keys() & additional_node_types
+
+            if len(intersection) != 0:
+                raise Exception(
+                    f"Node name collision in module {module_name}: {', '.join(intersection)}"
+                )
+
+            node_types |= additional_node_types
 
     for module_name in module_names:
         module = importlib.import_module(module_name)

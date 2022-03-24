@@ -46,7 +46,7 @@ def main():
     args = parser.parse_args()
 
     sys.path.insert(0, getcwd())
-    node_types = collect_node_types(args.modules, include_builtins=True)
+    node_types = collect_node_types(args.modules, discover_installed=True)
 
     app = create_app(node_types=node_types, www_root=args.wwwroot)
     app.run(debug=True)

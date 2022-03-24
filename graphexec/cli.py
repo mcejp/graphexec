@@ -21,7 +21,7 @@ def main():
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
 
     sys.path.insert(0, getcwd())
-    process_graph(args.path.read_text(), collect_node_types(args.modules, include_builtins=True))
+    process_graph(args.path.read_text(), collect_node_types(args.modules, discover_installed=True))
 
 
 if __name__ == "__main__":
