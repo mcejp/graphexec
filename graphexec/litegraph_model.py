@@ -29,6 +29,9 @@ class GraphNode(BaseModel):
     def outputs_by_slot_id(self):
         return {output.slot_index: output for output in self.outputs}
 
+    def __str__(self):
+        return f"{self.id}:{self.type}({self.title or ''})"
+
 
 @dataclass
 class GraphLink:

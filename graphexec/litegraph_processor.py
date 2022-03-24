@@ -80,7 +80,7 @@ def process_graph(model: str, handlers) -> str:
             raise Exception(f"Error in evaluation of node: {str(node)}") from ex
 
         end = time.time()
-        logger.info("%s(%s): took %.2f secs", node.type, node.title or "", end - start)
+        logger.info("%s: took %.2f secs", node, end - start)
         node_results[node.id] = res
 
     # extract additional outputs (e.g., visual preview)
