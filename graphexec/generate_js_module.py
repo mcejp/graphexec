@@ -29,7 +29,7 @@ def main():
             print(f"Warning: no doc for node type {name}", file=sys.stderr)
 
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(Path(__file__).parent / "templates"),
+        loader=jinja2.PackageLoader("graphexec"),
         trim_blocks=True,
         lstrip_blocks=True,
     )
