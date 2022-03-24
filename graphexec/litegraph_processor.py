@@ -31,7 +31,11 @@ def evaluate_node(
             link = graph.links_by_id[input.link]
             node = graph.nodes_by_id[link.in_node_id]
             # node results are keyed by output name, but the link contains slot_id; need to resolve the output name
-            output_name = node.outputs_by_slot_id[link.in_slot_id].name
+            try:
+                output_name = node.outputs_by_slot_id[link.in_slot_id].name
+            except KeyError:
+                # This seems to happen when creating a new node by dragging from the input of another one
+                raise Exception(f"Unable to map slot ID {link.in_slot_id} for node {node}; node outputs: {repr(node.outputs_by_slot_id)}") from None
             value = node_results[link.in_node_id].outputs[output_name]
             kwargs[input.name] = value
         else:
