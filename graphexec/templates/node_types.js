@@ -20,7 +20,7 @@
 
         this.properties = {
             {% for prop_name, prop in t.properties.items() %}
-            {{prop_name}}: {{prop.default_value}},
+            {{prop_name}}: {{prop.default_value | tojson}},
             {% endfor %}
         };
 

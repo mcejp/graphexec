@@ -1,20 +1,23 @@
 import importlib
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List, Sequence
 
 from graphexec.model import NodeTypeModel, PropertyModel
 
-from . import litegraph_builtins
-
 
 def collect_node_types(module_names: List[str], *, include_builtins: bool) -> Dict[str, Any]:
+    def dictify(funcs: Sequence[Callable]):
+        return {func._node_type_model.type_name: func for func in funcs}
+
     if include_builtins:
-        node_types = {} | litegraph_builtins.NODE_TYPES
+        from . import litegraph_builtins
+
+        node_types = {} | dictify(litegraph_builtins.NODE_TYPES)
     else:
         node_types = {}
 
     for module_name in module_names:
         module = importlib.import_module(module_name)
-        additional_node_types = module.NODE_TYPES
+        additional_node_types = dictify(module.NODE_TYPES)
 
         intersection = node_types.keys() & additional_node_types
 
@@ -30,14 +33,18 @@ def collect_node_types(module_names: List[str], *, include_builtins: bool) -> Di
 
 def _get_model(func) -> NodeTypeModel:
     if not hasattr(func, "_node_type_model"):
-        func._node_type_model = NodeTypeModel(label="Unknown", inputs={}, outputs={}, properties={})
+        func._node_type_model = NodeTypeModel(
+            type_name="UNKNOWN", label="Unknown", inputs={}, outputs={}, properties={}
+        )
 
     return func._node_type_model
 
 
-def define(**kwargs):
+def define(type_name, label, **kwargs):
     def wrap(func):
         m = _get_model(func)
+        m.type_name = type_name
+        m.label = label
         for attr, value in kwargs.items():
             setattr(m, attr, value)
         return func
@@ -69,7 +76,9 @@ def property(name: str, default_value, **kwargs):
     def wrap(func):
         m = _get_model(func)
         assert name not in m.outputs
-        m.properties = {name: PropertyModel(**kwargs, default_value=default_value)} | m.properties  # slow?
+        m.properties = {
+            name: PropertyModel(**kwargs, default_value=default_value)
+        } | m.properties  # slow?
         return func
 
     return wrap

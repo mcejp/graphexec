@@ -24,6 +24,7 @@ class PropertyModel:
 
 @dataclass
 class NodeTypeModel:
+    type_name: str
     label: str
     inputs: Dict[str, str]
     outputs: Dict[str, str]
